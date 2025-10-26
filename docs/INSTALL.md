@@ -1,6 +1,6 @@
 # ELIO Installation Guide
 
-This guide explains how to install and configure ELIO for development and production.
+This guide explains how to install and configure ELIO for local development and production.
 
 ## Requirements
 
@@ -48,25 +48,25 @@ LOG_LEVEL=info
 
 ### Frontend
 
-Edit environment files in `client/src/environments/` as needed.
+Edit environment files in `client/src/environments/` if needed.
 
 ## Running the Application
 
 ### Development
 
 - Backend: `npm run dev` (http://localhost:10000)
-- Frontend: `npm start` (http://localhost:4200)
+- Frontend: `npm run dev` (http://localhost:4200)
 
 ### Production
 
 - Backend: `npm start`
-- Frontend: `npm run build && npm run serve:ssr:client`
+- Frontend: `npm start`
 
 ## Troubleshooting
 
 - Port conflicts: kill processes using the port.
 - Dependency errors: reinstall node_modules.
 
-For further assistance, see [docs/API.md](API.md) or open an issue.
+For more help, open an issue.
 
 ---
