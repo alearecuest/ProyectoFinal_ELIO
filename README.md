@@ -1,4 +1,4 @@
-![Banner with stakeholders logos](.banner.png)
+![Banner with stakeholders logos](./banner.png)
 
 # Elio
 
