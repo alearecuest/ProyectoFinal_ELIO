@@ -15,22 +15,6 @@ Thank you for your interest in contributing! This document provides guidelines a
 
 ## Code of Conduct
 
-### Our Pledge
-
-We are committed to providing a welcoming and inclusive environment for all contributors, regardless of:
-
-- Experience level
-- Gender identity and expression
-- Sexual orientation
-- Disability
-- Personal appearance
-- Body size
-- Race
-- Ethnicity
-- Age
-- Religion
-- Nationality
-
 ### Our Standards
 
 **Positive behavior includes:**
