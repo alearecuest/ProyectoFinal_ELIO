@@ -1,181 +1,157 @@
-# User Guide
+# ELIO User Guide
 
-Welcome to ELIO! This guide will help you get the most out of the platform.
+Welcome to ELIO! This guide will help you use the platform efficiently.
 
 ## Table of Contents
 
-- [Getting Started](#getting-started)
-- [User Interface Overview](#user-interface-overview)
-- [Core Features](#core-features)
-- [Consultation System](#consultation-system)
-- [Account Management](#account-management)
-- [Tips and Best Practices](#tips-and-best-practices)
-- [Troubleshooting](#troubleshooting)
-- [FAQ](#faq)
-- [Accessibility](#accessibility)
-- [Updates and Maintenance](#updates-and-maintenance)
-- [Additional Resources](#additional-resources)
-- [Contact and Support](#contact-and-support)
+- Getting Started
+- User Interface Overview
+- Core Features
+- Consultation Workflow
+- Multi-Step Consultation Flow
+- Account Management
+- Best Practices
+- Troubleshooting
+- FAQ
+- Accessibility
+- Support
+
+---
 
 ## Getting Started
 
 ### Accessing the Application
 
-1. Open your web browser (Chrome, Firefox, Safari, or Edge)
-2. Navigate to: `http://localhost:4200` (development) or your production domain
-3. Wait for the application to load
+- Open your browser (Chrome, Firefox, Safari, Edge)
+- Go to: `http://localhost:4200` (development) or your production domain
+- Log in or create your account
 
 ### System Requirements
 
-- Modern web browser (latest version recommended)
-- Internet connection (stable required)
+- Modern browser (latest version)
+- Stable internet connection
 - JavaScript and cookies enabled
 
-### First Time Setup
-
-1. Create an account (if required)
-2. Verify your email (if applicable)
-3. Log in with your credentials
-4. Complete your profile (optional)
+---
 
 ## User Interface Overview
 
-### Main Components
+### Main Layout
 
-```
-┌────────────────────────────────────────────────────┐
-│                    Header/Navbar                   │
-│  [Logo]  [Navigation]        [User Menu] [Logout]  │
-├────────────────────────────────────────────────────┤
-│                                                    │
-│                   Main Content                     │
-│                                                    │
-│              [Your Interface Here]                 │
-│                                                    │
-├────────────────────────────────────────────────────┤
-│                      Footer                        │
-│         © 2025 - Terms - Privacy - Contact         │
-└────────────────────────────────────────────────────┘
-```
+- **Header/Navbar:** Logo, navigation links, user menu
+- **Main Content:** Dashboard, consultations, history
+- **Footer:** Legal info, contact, privacy
 
 ### Navigation Menu
 
 - Home: Main dashboard
-- Consultations: Start a new AI consultation
-- History: View past consultations
-- Settings: Manage your account and preferences
+- Consultations: Start and manage consultations
+- History: View previous consultations
+- Settings: Manage account and preferences
 - Help: Access documentation
+
+---
 
 ## Core Features
 
 ### Dashboard
 
-- Quick access to consultations
-- Recent activity feed
-- Key statistics and metrics
-- Quick action buttons
+- Quick access to consultation features
+- Recent activity and statistics
+- Shortcuts to frequent actions
 
-### Search Functionality
+### Search
 
-- Click the search icon in the header
-- Enter your query and press Enter
-- Results will be shown instantly
+- Use the search bar to find consultations or documentation
+- Filter and sort results
 
-## Consultation System
+---
 
-ELIO uses AI to provide intelligent responses to your questions.
+## Consultation Workflow
 
-### Creating a Consultation
+ELIO uses AI to help you with medical consultations.
 
-1. Navigate to "Consultations" in the main menu
-2. Enter your question (e.g., "What are the best practices for API design?")
-3. Add context (optional)
-4. Submit your query and view the AI's response
+### Starting a Consultation
 
-#### Features
+1. Click "Consultations" in the menu
+2. Fill out the form (reason, age, gender)
+3. Submit and wait for response
 
-- Real-time processing and feedback
-- Copy, save, share, and rate responses
-- Consultation history for reference
+### Viewing Consultation History
 
-### Consultation History
+- Access "History" from the navigation menu
+- Filter by date or keyword
+- Click on a record to view details
 
-- Go to "History" in the menu
-- Filter by date, keyword, or relevance
-- Click any past consultation to view details
+---
 
-### Best Practices
+## Multi-Step Consultation Flow
 
-- Write specific questions
-- Provide context
-- Focus on one topic per consultation
+ELIO guides you through a multi-step process for each consultation:
 
-**Example:**
-Before: "How do I make my app faster?"
-After: "How can I reduce the load time of my Angular application? It currently takes 5 seconds to load the initial page. I'm using Angular 20 with SSR."
+1. Submit initial consultation details
+2. Select relevant options (checkboxes) from suggestions
+3. Add additional information if needed
+4. The system may prompt for more details in subsequent steps
+5. Review and complete the consultation
+
+---
 
 ## Account Management
 
-- Update profile and security settings
-- Change password and enable two-factor authentication
-- Manage notification preferences
+- Update profile information (name, email, password)
+- Change security settings (enable 2FA)
+- Set notification preferences
 
-## Tips and Best Practices
+---
 
+## Best Practices
+
+- Ask clear, specific consultation questions
+- Provide context when needed
 - Regularly export your consultation history
-- Bookmark frequently used pages
-- Keep your browser and connection updated
-- Use strong passwords and enable 2FA
+- Use strong passwords and enable two-factor authentication
+
+---
 
 ## Troubleshooting
 
-- If the page won't load, refresh or clear cache
-- For login issues, use "Forgot Password" or check your credentials
-- If consultations are slow, check your internet connection
+- If a page won't load: refresh, clear cache, or try another browser
+- If you can't log in: check credentials, use "Forgot Password"
+- For consultation issues: check your internet connection, retry
+
+---
 
 ## FAQ
 
-### General
+**Is my data secure?**  
+Yes. See [Security Guide](SECURITY.md).
 
-- Is my data secure? Yes, see the [Security Guide](SECURITY.md)
-- Can I use this offline? No, internet is required
-- Is there a mobile app? The web app is mobile-responsive
+**How long does a consultation take?**  
+Usually 5–10 seconds.
 
-### Consultations
+**Is there a mobile app?**  
+The web platform is mobile-responsive.
 
-- How long does a consultation take? 5-10 seconds
-- Are consultations private? Yes
+**Can I integrate with other tools?**  
+API access is available for integrations.
 
-### Technical
-
-- What AI model is used? Google Gemini
-- Can I integrate with other tools? API access may be available
+---
 
 ## Accessibility
 
 - Screen reader compatibility
 - Keyboard navigation
-- High contrast mode and adjustable font sizes
-
-## Updates and Maintenance
-
-- Check for updates regularly
-- Maintenance windows announced in advance
-
-## Additional Resources
-
-- [API Reference](API.md)
-- [Architecture](ARCHITECTURE.md)
-- [Security](SECURITY.md)
-- [Contributing](../CONTRIBUTING.md)
-
-## Contact and Support
-
-- Email: support@yourdomain.com
-- Documentation: https://docs.yourdomain.com
-- Status Page: https://status.yourdomain.com
-- Community Forum: https://community.yourdomain.com
+- High-contrast mode and adjustable font sizes
 
 ---
 
-Thank you for using ELIO! We value your feedback.
+## Support
+
+- Email: support@yourdomain.com
+- Documentation: [docs/](../docs)
+- Community forum: https://community.yourdomain.com
+
+---
+
+Thank you for choosing ELIO!
