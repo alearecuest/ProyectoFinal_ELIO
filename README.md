@@ -1,28 +1,28 @@
 # ELIO - Intelligent Consultation Platform
 
-Welcome to ELIO! This platform leverages AI to provide intelligent medical consultations and workflow management for healthcare professionals and patients.
+ELIO is an AI-powered platform for medical consultations and workflow automation, designed for healthcare professionals and patients. It offers multi-step information management, secure data processing, and a modern, scalable architecture.
 
-## Key Features
+## Main Features
 
-- AI-powered consultation flow
-- Multi-step patient information management
-- Angular-based modern frontend
-- Fastify + TypeScript backend architecture
-- Secure API communication and patient data storage
-- Modular and scalable design
+- AI-driven consultation workflow
+- Multi-step patient information collection
+- Angular frontend and Fastify + TypeScript backend
+- Google Gemini AI integration
+- Secure REST API
+- Modular, scalable design
 
 ## Quick Start
 
-To get started, please refer to our [Installation Guide](docs/INSTALL.md).
+See the [Installation Guide](docs/INSTALL.md) for setup instructions.
 
 ## Documentation
 
-- [User Guide](docs/USER_GUIDE.md) — How to use the platform
-- [Installation Guide](docs/INSTALL.md) — Setup instructions
-- [Architecture Overview](docs/ARCHITECTURE.md) — System design and diagrams
-- [API Reference](docs/API.md) — Backend endpoints and usage
-- [Consultation API Guide](docs/CONSULTATION_API_GUIDE.md) — Integrating with the consultation system
-- [Options Selector Component Guide](docs/OPTIONS_SELECTOR_GUIDE.md)
+- [User Guide](docs/USER_GUIDE.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [API Reference](docs/API_REFERENCE.md)
+- [Consultation API Guide](docs/CONSULTATION_API_GUIDE.md)
+- [Options Selector Guide](docs/OPTIONS_SELECTOR_GUIDE.md)
+- [Multi-Step Flow Guide](docs/MULTI_STEP_FLOW_GUIDE.md)
 - [Deployment Guide](docs/DEPLOYMENT.md)
 - [Security Guide](docs/SECURITY.md)
 - [Project Charter](docs/PROYECT_CHARTER.md)
@@ -30,12 +30,4 @@ To get started, please refer to our [Installation Guide](docs/INSTALL.md).
 
 ## Contributing
 
-Interested in contributing? Please read our [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Support
-
-For help or inquiries, please open an issue on GitHub or contact our team.
-
----
-
-© 2025 ELIO Project Team
+See [CONTRIBUTING.md](CONTRIBUTING.md) for collaboration guidelines.
