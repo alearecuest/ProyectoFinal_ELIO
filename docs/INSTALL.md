@@ -1,17 +1,17 @@
 # ELIO Installation Guide
 
-This guide explains how to set up ELIO for development and production environments.
+This guide explains how to install and configure ELIO for development and production.
 
 ## Requirements
 
-- OS: Windows 10+, macOS 11+, or Linux (Ubuntu 20.04+)
+- OS: Windows, macOS, or Linux
 - Node.js: v18.x or higher
 - npm: v9.x or higher
 
-## Cloning the Repository
+## Clone the Repository
 
 ```bash
-git clone https://github.com/your-name/ProyectoFinal_ELIO.git
+git clone https://github.com/alearecuest/ProyectoFinal_ELIO.git
 cd ProyectoFinal_ELIO
 ```
 
@@ -67,8 +67,6 @@ Edit environment files in `client/src/environments/` as needed.
 - Port conflicts: kill processes using the port.
 - Dependency errors: reinstall node_modules.
 
-## Need Help?
-
-See [docs/API.md](API.md), [docs/ARCHITECTURE.md](ARCHITECTURE.md), or open an issue.
+For further assistance, see [docs/API.md](API.md) or open an issue.
 
 ---
