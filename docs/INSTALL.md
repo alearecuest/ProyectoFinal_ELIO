@@ -13,8 +13,8 @@ This guide covers installation and environment setup for development and product
 ## Clone the Repository
 
 ```bash
-git clone https://github.com/alearecuest/ProyectoFinal_ELIO.git
-cd ProyectoFinal_ELIO
+git clone https://github.com/your-repo/your-fold.git
+cd your-fold
 ```
 
 ## Backend Setup
