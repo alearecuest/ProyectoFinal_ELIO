@@ -1,32 +1,32 @@
 # ELIO - Intelligent Consultation Platform
 
-ELIO is an AI-powered platform for medical consultation and patient intake automation.  
-It is designed for healthcare professionals and integrates a modern Angular frontend with a Fastify/TypeScript backend.
+ELIO is an AI-powered platform for automating medical consultations and patient intake.  
+Built for healthcare professionals, it features a modern Angular frontend (`client/`) and a Fastify + TypeScript backend (`server/`).
 
-## Repository Structure
+## Project Structure
 
 ```
 /
-├── client/   # Frontend (Angular 20)
-├── server/   # Backend (Fastify + TypeScript)
-├── docs/     # Documentation
-├── pasos.json # Consultation step definitions
-├── CONTRIBUTING.md # Contribution guide
-└── manELIO.md # Project charter/overview (optional)
+├── client/   # Frontend (Angular)
+├── server/   # Backend (Fastify, TypeScript)
+├── manELIO.md  # Project charter/vision
 ```
 
 ## Quick Start
 
-Refer to [docs/INSTALL.md](docs/INSTALL.md) for setup and installation instructions.
+See [INSTALL.md](INSTALL.md) for installation and setup instructions.
 
 ## Documentation
 
-- [User Guide](docs/USER_GUIDE.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [API Reference](docs/API.md)
-- [Consultation API Guide](docs/CONSULTATION_API_GUIDE)
-- [Options Selector Guide](docs/OPTIONS_SELECTOR_GUIDE.md)
-- [Deployment Guide](docs/DEPLOYMENT.md)
-- [Security Guide](docs/SECURITY.md)
-- [Implementation Summary](docs/IMPLEMENTATION_SUMMARY)
-- [Project Charter](docs/PROYECT_CHARTER.md)
+- [User Guide](USER_GUIDE.md)
+- [Architecture](ARCHITECTURE.md)
+- [API Reference](API.md)
+- [Deployment Guide](DEPLOYMENT.md)
+- [Security Guide](SECURITY.md)
+- [Project Charter](manELIO.md)
+
+## Support
+
+For help, open an issue or contact the team.
+
+---
