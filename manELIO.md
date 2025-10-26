@@ -1,582 +1,311 @@
-# Contributing to This Project
+![Banner with stakeholders logos](./banner.png)
 
-Thank you for your interest in contributing! This document provides guidelines and instructions for contributing to this project.
+# Elio
+
+Elio is a tool that allows medical consultations to be recorded in a more accessible, convenient, and efficient way. It automates the creation of clinical diagnostic reports so that doctors don’t have to write everything from scratch.
+
+This will save time, produce a more organized record, and later provide the ability to generate statistical samples of cases, disease, and clinical diagnostic.
 
 ## Table of Contents
 
-- [Code of Conduct](#code-of-conduct)
-- [Getting Started](#getting-started)
-- [Development Workflow](#development-workflow)
-- [Coding Standards](#coding-standards)
-- [Commit Guidelines](#commit-guidelines)
-- [Pull Request Process](#pull-request-process)
-- [Testing Requirements](#testing-requirements)
-- [Reporting Issues](#reporting-issues)
+1. [User Stories and Mockups](#1-user-stories-and-mockups)
+2. [System Architecture](#2-system-architecture)
+3. [Components, Classes, and Database Design](#3-components-classes-and-database-design)
+4. [Sequence Diagrams](#4-sequence-diagrams)
+5. [API Specifications](#5-api-specifications)
+6. [Source Control Management (SCM) and Quality Assurance (QA) Strategies](#6-scm-and-qa-strategies)
+7. [Technical Justifications](#7-technical-justifications)
 
-## Code of Conduct
 
-### Our Pledge
+## 1. User Stories and Mockups
 
-We are committed to providing a welcoming and inclusive environment for all contributors, regardless of:
+### 1.1 Prioritized User Stories (MoSCoW)
 
-- Experience level
-- Gender identity and expression
-- Sexual orientation
-- Disability
-- Personal appearance
-- Body size
-- Race
-- Ethnicity
-- Age
-- Religion
-- Nationality
+#### Must Have
 
-### Our Standards
+- As a physician, I need record my consultations in the most accessible, comfortable, and efficient way possible, to dedicate more time to the patient observation, rather than filling out forms.
 
-**Positive behavior includes:**
+### 1.2 Mockups
 
-- Using welcoming and inclusive language
-- Being respectful of differing viewpoints
-- Gracefully accepting constructive criticism
-- Focusing on what is best for the community
-- Showing empathy towards other community members
+[Elio User Interface](https://www.figma.com/proto/GKUrCkbEFd4LLeZqOR6X9h/Elio?node-id=147-368&p=f&t=OtDCn1gyjt3f2z4H-0&scaling=min-zoom&content-scaling=fixed&page-id=147%3A368)
 
-**Unacceptable behavior includes:**
 
-- Trolling, insulting/derogatory comments, and personal attacks
-- Public or private harassment
-- Publishing others' private information without permission
-- Other conduct which could reasonably be considered inappropriate
+## 2. System Architecture
 
-## Getting Started
+### 2.1 Architecture Diagram
 
-### Prerequisites
+##### Fig. 2 Architecture Diagram
 
-Before contributing, ensure you have:
+```mermaid
+flowchart LR
+  %% CONTEXTO
+  subgraph Ext["`External context`"]
+    AppEon["`AppEon<br/>SSO upstream (token/claims)`"]
+  end
 
-- Node.js v18.0.0 or higher
-- npm v9.0.0 or higher
-- Git installed and configured
-- A GitHub account
+  %% CLIENTE
+  subgraph Client["`Web Client(SPA)`"]
+    UI["`Elio Web UI<br/>Screen 1: Motivo<br/>Screen 2: Recolección<br/>Screen 3: Borrador`"]
+  end
 
-### Fork and Clone
+  %% API
+  subgraph API["`API Layer`"]
+    CTRL["`HTTP API / Controllers`"]
+    VAL["`Input validation<br/>(DTOs / Schemas)`"]
+  end
 
-1. **Fork the repository** on GitHub
-2. **Clone your fork** locally:
-   ```bash
-   git clone https://github.com/your-user/your-repo.git
-   cd your-repo
-   ```
+  %% CORE
+  subgraph CORE["`Application Core`"]
+    USE["`Use Cases / Services<br/>StartSession • RecordStep • GenerateDraft • Finalize`"]
+    ORCH["`Orchestrator de pasos`"]
+    RULES["`Rules / Policies`"]
+    PORTS["`Ports (Interfaces)<br/>SessionStore • LLMService`"]
+  end
 
-3. **Add upstream remote**:
-   ```bash
-   git remote add upstream https://github.com/original-owner/your-repo.git
-   ```
+  %% INFRA
+  subgraph INFRA["`Infrastructure (Adapters)`"]
+    SESS["`SessionStore RAM/TTL`"]
+    LLM["`LLM Adapter`"]
+    AUTH["`SSO Verifier`"]
+  end
 
-4. **Install dependencies**:
-   ```bash
-   # Backend
-   cd Server
-   npm install
-   
-   # Frontend
-   cd ../ui
-   npm install
-   ```
-
-### Create a Branch
-
-Always create a new branch for your work:
-
-```bash
-git checkout -b feature/your-feature-name
-# or
-git checkout -b fix/your-bug-fix
-# or
-git checkout -b docs/your-documentation-update
+  %% FLUJOS PRINCIPALES (sin etiquetas en aristas)
+  AppEon --> UI
+  UI --> CTRL
+  CTRL --> AUTH --> CTRL
+  CTRL --> VAL --> USE
+  USE --> ORCH --> RULES --> ORCH
+  USE --> SESS
+  USE --> LLM
+  UI <--> CTRL
 ```
 
-**Branch naming conventions:**
+### 2.2 Component Description
 
-- `feature/` - New features
-- `fix/` - Bug fixes
-- `docs/` - Documentation changes
-- `refactor/` - Code refactoring
-- `test/` - Test additions or changes
-- `chore/` - Maintenance tasks
+| Components | Tecnology | Description |
+|-----|-----------|----------------------|
+| Frontend   | Angular (Web - Framework) | SPA - Single Page Application |
+| Backend    | Node.js | Server Technology |
+| Database | MongoDB | Storing, managing, and retrieving data such as SNOMED CT codes & VADEMECUM names |
+| External Services | Gemini 2.5 & MongoDB | Gemini API for content generation and text embedding. MongoDB for storing, managing, and retrieving data |
 
-## Development Workflow
+## 3. Components, Classes, and Database Design
 
-### 1. Sync with Upstream
+### 3.1 Main Components and Classes
 
-Before starting work, sync with the upstream repository:
+#### Back-end
 
-```bash
-git fetch upstream
-git checkout main
-git merge upstream/main
-git push origin main
-```
+**1. Controller (flow handler)**  
+Acts as the central orchestrator: decides which sub-endpoint to call, updates the in-memory model, and coordinates the interaction with the AI before returning a response to the frontend. It is the core of the loop.
 
-### 2. Make Your Changes
+- **Attributes:**
+  - `PasoActual`: string (`"consulta"`, `"antecedentes"`, etc.)  
+  - `PatientID`: ID of the session/patient received from AppEon  
+  - `PartialState`: JSON object storing the incremental state (instance of `ClinicalSummary`)  
 
-- Write clean, readable code
-- Follow the coding standards (see below)
-- Add tests for new features
-- Update documentation as needed
-
-### 3. Test Your Changes
-
-```bash
-# Backend tests
-cd Server
-npm test
-
-# Frontend tests
-cd ui
-npm test
-
-# Run linting
-npm run lint
-```
-
-### 4. Commit Your Changes
-
-```bash
-git add .
-git commit -m "feat: add new feature"
-```
-
-See [Commit Guidelines](#commit-guidelines) for commit message format.
-
-### 5. Push to Your Fork
-
-```bash
-git push origin feature/your-feature-name
-```
-
-### 6. Create a Pull Request
-
-- Go to GitHub and create a Pull Request
-- Fill out the PR template
-- Link related issues
-- Wait for review
-
-## Coding Standards
-
-### TypeScript/JavaScript
-
-#### General Rules
-
-- Use **TypeScript** for all new code
-- Use **const** and **let**, never **var**
-- Use **arrow functions** for callbacks
-- Use **async/await** instead of promises chains
-- Use **meaningful variable names**
-
-#### Example
-
-```typescript
-// Bad
-function getData(x: any) {
-  return fetch(x).then(r => r.json());
-}
-
-// Good
-async function fetchUserData(userId: string): Promise<User> {
-  const response = await fetch(`/api/users/${userId}`);
-  return response.json();
-}
-```
-
-#### Naming Conventions
-
-- **Classes**: PascalCase - `UserService`, `HttpClient`
-- **Interfaces**: PascalCase with 'I' prefix - `IUserRepository`
-- **Functions**: camelCase - `getUserById`, `validateEmail`
-- **Variables**: camelCase - `userName`, `isActive`
-- **Constants**: UPPER_SNAKE_CASE - `MAX_RETRY_ATTEMPTS`
-- **Files**: kebab-case - `user-service.ts`, `http-client.ts`
-
-### Backend Code Style
-
-#### File Structure
-
-```typescript
-// 1. Imports
-import { FastifyInstance } from 'fastify';
-import { UserService } from '../services/user-service';
-
-// 2. Interfaces/Types
-interface UserRequest {
-  name: string;
-  email: string;
-}
-
-// 3. Constants
-const MAX_USERS = 100;
-
-// 4. Main code
-export class UserController {
-  constructor(private userService: UserService) {}
-  
-  async createUser(request: UserRequest): Promise<User> {
-  }
-}
-```
-
-#### Error Handling
-
-```typescript
-class ValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'ValidationError';
-  }
-}
-
-async function createUser(data: UserData): Promise<User> {
-  if (!data.email) {
-    throw new ValidationError('Email is required');
-  }
-}
-```
-
-### Frontend Code Style (Angular)
-
-#### Component Structure
-
-```typescript
-import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../services/user.service';
-
-@Component({
-  selector: 'app-user-list',
-  templateUrl: './user-list.component.html',
-  styleUrls: ['./user-list.component.css']
-})
-export class UserListComponent implements OnInit {
-  users: User[] = [];
-  loading = false;
-
-  constructor(private userService: UserService) {}
-
-  ngOnInit(): void {
-    this.loadUsers();
-  }
-
-  async loadUsers(): Promise<void> {
-    this.loading = true;
-    try {
-      this.users = await this.userService.getUsers();
-    } catch (error) {
-      console.error('Failed to load users:', error);
-    } finally {
-      this.loading = false;
-    }
-  }
-}
-```
-
-#### Template Guidelines
-
-```html
-<!-- Good - Use OnPush change detection when possible -->
-<!-- Use async pipe for observables -->
-<div *ngIf="users$ | async as users">
-  <div *ngFor="let user of users; trackBy: trackByUserId">
-    {{ user.name }}
-  </div>
-</div>
-
-<!-- Use semantic HTML -->
-<button type="button" (click)="deleteUser(user.id)">
-  Delete
-</button>
-```
-
-### Code Formatting
-
-We use **Prettier** for consistent code formatting:
-
-```bash
-# Format code
-npm run format
-
-# Check formatting
-npm run format:check
-```
-
-**Prettier configuration** (already in `package.json`):
-
-```json
-{
-  "printWidth": 100,
-  "singleQuote": true,
-  "trailingComma": "es5",
-  "semi": true,
-  "tabWidth": 2
-}
-```
-
-### Linting
-
-We use **ESLint** for code quality:
-
-```bash
-# Run linter
-npm run lint
-
-# Fix auto-fixable issues
-npm run lint:fix
-```
-
-## Commit Guidelines
-
-We follow the **Conventional Commits** specification.
-
-### Commit Message Format
-
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-### Types
-
-- **feat**: A new feature
-- **fix**: A bug fix
-- **docs**: Documentation changes
-- **style**: Code style changes (formatting, missing semi-colons, etc.)
-- **refactor**: Code refactoring
-- **perf**: Performance improvements
-- **test**: Adding or updating tests
-- **chore**: Maintenance tasks, dependency updates
-- **ci**: CI/CD changes
-- **build**: Build system changes
-
-### Examples
-
-```bash
-# Feature
-git commit -m "feat(auth): add JWT authentication"
-
-# Bug fix
-git commit -m "fix(api): resolve CORS issue on /users endpoint"
-
-# Documentation
-git commit -m "docs(readme): update installation instructions"
-
-# Breaking change
-git commit -m "feat(api): change user endpoint response format
-
-BREAKING CHANGE: The /api/users endpoint now returns an object instead of an array"
-```
-
-### Commit Message Rules
-
-- Use imperative mood: "add" not "added" or "adds"
-- Don't capitalize first letter
-- No period (.) at the end
-- Keep subject line under 72 characters
-- Separate subject from body with a blank line
-- Use body to explain what and why, not how
-
-## Pull Request Process
-
-### Before Submitting
-
-- [ ] Code follows the style guidelines
-- [ ] Self-review completed
-- [ ] Comments added for complex code
-- [ ] Documentation updated
-- [ ] Tests added/updated and passing
-- [ ] No console.log() or debugging code
-- [ ] Branch is up to date with main
-
-### PR Title
-
-Follow the same format as commit messages:
-
-```
-feat(auth): implement OAuth2 authentication
-fix(ui): resolve button alignment issue
-docs(api): add endpoint documentation
-```
-
-### PR Description Template
-
-```markdown
-## Description
-Brief description of what this PR does.
-
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
-
-## Related Issues
-Closes #123
-Relates to #456
-
-## Changes Made
-- Added X feature
-- Fixed Y bug
-- Updated Z documentation
-
-## Testing
-- [ ] Unit tests pass
-- [ ] Integration tests pass
-- [ ] Manual testing completed
-
-
-## Checklist
-- [ ] Code follows style guidelines
-- [ ] Self-review completed
-- [ ] Documentation updated
-- [ ] Tests added/updated
-- [ ] No breaking changes (or documented)
-```
-
-### Review Process
-
-1. **Automated Checks**: CI/CD pipeline runs tests and linting
-2. **Code Review**: At least one maintainer reviews the code
-3. **Changes Requested**: Address feedback and push updates
-4. **Approval**: PR is approved by maintainer(s)
-5. **Merge**: Maintainer merges the PR
-
-### After Merge
-
-- Delete your feature branch
-- Sync your fork with upstream
-- Celebrate! 🎉
-
-## Testing Requirements
-
-### Backend Tests
-
-All new features must include tests:
-
-```typescript
-import { describe, it, expect } from 'vitest';
-import { UserService } from '../src/application/services/user-service';
-
-describe('UserService', () => {
-  it('should create a new user', async () => {
-    const userService = new UserService();
-    const user = await userService.createUser({
-      name: 'John Doe',
-      email: 'john@example.com'
-    });
-    
-    expect(user).toBeDefined();
-    expect(user.email).toBe('john@example.com');
-  });
-});
-```
-
-### Frontend Tests
-
-```typescript
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UserListComponent } from './user-list.component';
-
-describe('UserListComponent', () => {
-  let component: UserListComponent;
-  let fixture: ComponentFixture<UserListComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ UserListComponent ]
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(UserListComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
-```
-
-### Test Coverage
-
-- Aim for **>80% code coverage**
-- All critical paths must be tested
-- Edge cases and error handling tested
-
-```bash
-# Check coverage
-npm run test:coverage
-```
-
-## Reporting Issues
-
-### Bug Reports
-
-Use the bug report template:
-
-```markdown
-**Describe the bug**
-A clear description of the bug.
-
-**To Reproduce**
-Steps to reproduce:
-1. Go to '...'
-2. Click on '...'
-3. See error
-
-**Expected behavior**
-What you expected to happen.
-
-**Screenshots**
-If applicable, add screenshots.
-
-**Environment:**
-- OS: [e.g. Ubuntu 22.04]
-- Node.js version: [e.g. 18.17.0]
-- Browser: [e.g. Chrome 120]
-
-**Additional context**
-Any other relevant information.
-```
-
-### Feature Requests
-
-```markdown
-**Is your feature request related to a problem?**
-A clear description of the problem.
-
-**Describe the solution you'd like**
-A clear description of what you want to happen.
-
-**Describe alternatives you've considered**
-Any alternative solutions or features.
-
-**Additional context**
-Any other context or screenshots.
-```
-
-## Questions?
-
-If you have questions about contributing:
-
-1. Check existing issues and discussions
-2. Read the documentation in `/docs`
-3. Open a new discussion on GitHub
-4. Contact maintainers
-
-## License
-
-By contributing, you agree that your contributions will be licensed under the same license as the project.
+- **Methods:**
+  - `nextStep(input)`: receives the response from the frontend and decides which section to move to.  
+  - `savePartialState(data)`: stores info in temporary memory (not persisted in DB).  
+  - `getSuggestions(step)`: queries Gemini for contextualized options.  
+  - `buildSummary()`: builds the final JSON (`clinicalSummarySchema`).  
 
 ---
 
-**Thank you for contributing!**
+**2. AIService (Gemini service)**  
+Handles communication with Gemini Flash 2.5.
+
+- **Attributes:**
+  - `model`: Gemini Flash 2.5  
+  - `context`: partial patient state (JSON or Markdown)  
+
+- **Methods:**
+  - `generateOptions(step, context)`: returns suggested responses for a given section.  
+  - `summarizeCase(context)`: generates the complete clinical draft (editable).  
+
+---
+
+**3. Model (central structure)**  
+Represents the clinical state of the consultation during the session.
+
+```json
+{
+  "consulta": "Dolor en primer dedo pie derecho...",
+  "antecedentes": ["HTA", "Diabetes"],
+  "alergias": ["Penicilina"],
+  "farmacos": ["Metformina"],
+  "anamnesis": "Paciente refiere dolor progresivo...",
+  "examenes_fisicos": "Eritema e impotencia funcional en 1° dedo...",
+  "resumen": "Paciente masculino de 50 años con cuadro compatible con..."
+}
+```
+
+## 4. Sequence Diagrams
+
+### 4.1 Create medical note
+
+```mermaid
+sequenceDiagram
+  participant AppEon as AppEon
+  participant WebUI as WebUI
+  participant API as API
+  participant Core as Core
+  participant Rules as Rules
+  participant SessionStore as SessionStore
+  participant LLMAdapter as LLMAdapter
+
+  AppEon ->> WebUI: Abrir con token + edad/sexo
+  WebUI ->> API: StartSession (edad, sexo, motivo)
+  API ->> Core: StartSession
+  Core ->> LLMAdapter: Crear sesión (collecting)
+  Core ->> LLMAdapter: NextQuestions(contexto inicial)
+  LLMAdapter -->> Core: Preguntas iniciales
+  Core -->> API: Payload inicial
+  API -->> WebUI: Mostrar preguntas
+  loop Recolección por secciones (una por vez)
+    WebUI ->> API: RecordStep (respuestas de sección)
+    API ->> Core: RecordStep
+    Core ->> SessionStore: Actualizar contexto
+    Core ->> LLMAdapter: Enviar sección + contexto (incremental)
+    LLMAdapter -->> Core: Sugerencias/ajustes de próxima sección
+    Core ->> Rules: NextQuestions(contexto actualizado)
+    Rules -->> Core: Siguientes preguntas o completo
+    Core -->> API: Payload paso a paso
+    API -->> WebUI: Siguientes pasos o completo
+  end
+  WebUI ->> API: GenerateDraft
+  API ->> Core: GenerateDraft
+  Core ->> SessionStore: Cargar contexto consolidado
+  Core ->> LLMAdapter: Prompt con contexto total
+  LLMAdapter -->> Core: Texto de borrador
+  Core ->> SessionStore: Guardar borrador (RAM)
+  Core -->> API: Draft
+  API -->> WebUI: Borrador editable
+  WebUI ->> API: Finalize (texto final)
+  API ->> Core: Finalize
+  Core ->> SessionStore: Marcar finalizada (RAM, sin persistir)
+  Core -->> API: OK
+  API -->> WebUI: 200 Success
+```
+
+## 5. API Specifications
+
+### 5.1 External APIs
+
+| API | Purpose | Justification |
+|-----|-----------|---------------|
+| Google Gemini 2.5 | Content generation & Text embedding | It's the industry's standard to generate text together with OpenAI and it's free to use |
+| MongoDB | To allocate and search for VADEMECUM & SNOMED CT data | We know how to use it |
+
+### 5.2 Internal API
+
+#### Backend Endpoints
+
+| Route | HTTP Method | Description | Input Parameters | Output Format |
+|------|-------------|-------------|----------------------|-------------------|
+| `/api/init` | GET | Age, Gender | `String, Number` | ```json { "Age": x, "Gender": "x" }``` |
+| `/api/init` | POST | Age, Gender, Motivo_consulta | `String, Number,` | ```json { "Age": x, "Gender": "x", "Motivo_consulta": "x" }``` |
+| `/api/collect` | GET | Read state? | `json` | ```json``` |
+| `/api/collect` | POST | Submit step answers | `json` | ```json``` |
+| `/api/crear_nota` | GET | Read draft? | `json` | ```json``` |
+| `/api/crear_nota` | POST | Generate draft | `json` | ```json``` |
+| `/api/edit` | GET | Read draft? | `json` | ```json``` |
+| `/api/edit` | PUT | Save edited draft | `json` | ```json``` |
+| `/api/end` | POST | Finalize session | `json` | ```json``` |
+
+## 6. SCM and QA Strategies
+
+### 6.1 Version Control Management (SCM)
+
+#### Tool
+- **System**: Git  
+- **Platform**: GitHub  
+
+#### Branch Strategy
+- **main (Ask):** Contains only approved code ready for deployment.  
+- **develop (Ask):** Integration branch where the complete system is reviewed before moving to production.  
+- **test (Show):** Testing branch where backend and frontend are integrated to validate joint functionality.  
+- **backend (Show):** Backend working branch where API progress is shown.  
+- **frontend (Show):** Frontend working branch where interface progress is shown.  
+- **feature/[name] (Ship):** Temporary sub-branches to implement specific features (e.g., `feature/login-backend`, `feature/dashboard-frontend`).  
+
+#### Development Process
+1. Create a `feature/[name]` branch from `backend` or `frontend`.  
+2. Develop the feature and make descriptive commits.  
+3. Merge into `backend` or `frontend` (Show).  
+4. Integrate into `test` (Show) to validate backend + frontend together.  
+5. Merge into `develop` (Ask), subject to code review.  
+6. Manual QA and critical validations in `develop`.  
+7. Final merge into `main` (Ask) for production deployment.  
+
+#### Rules
+- Never merge Show branches directly into `main`.  
+- All merges into `develop` and `main` must be done via Pull Requests on GitHub with peer review.  
+- Commits must be descriptive and follow a consistent format.  
+- `main` must always be stable and ready for immediate deployment.  
+
+---
+
+### 6.2 Quality Assurance (QA)
+
+#### Test Types
+- **Unit Tests:** Validate critical backend and frontend functions and classes.  
+- **Integration Tests:** Validate interaction between backend and frontend in the `test` branch.  
+- **API Tests:** Validate endpoints using dedicated tools.  
+- **UI Tests:** Validate user interface flows.  
+- **Manual QA:** Review of critical use cases in `develop`.  
+- **Code Reviews:** All Pull Requests into Ask branches (`develop` and `main`) must be approved by at least one other team member.  
+
+#### Tools
+- **Backend (Unit Tests):** Jest / Mocha  
+- **Frontend (UI/Integration):** Jasmine testing framework
+- **API Testing:** Postman / Thunder Client  
+- **CI/CD:** GitHub Actions to run automated tests on every Pull Request  
+
+#### Code Coverage
+- **Goal:** >80% coverage in critical code.  
+- **Tools:** Jest (coverage report) and Cypress (for e2e).  
+
+#### QA Process
+1. Automatic execution of unit tests on every push to a sub-branch (Ship).  
+2. Integration tests when merging into `backend`/`frontend` (Show).  
+3. API and UI tests in `test` before merging into `develop`.  
+4. Manual QA and mandatory code review in `develop`.  
+5. Merging into `main` triggers automatic deployment to production if all validations pass.  
+
+## 7. Technical Justifications
+
+### 7.1 Technology Choices
+
+| Technology	| Alternatives Considered | Justification |
+|----------|--------------|---------------|
+| Angular | React | Angular provides more scalability |
+| Node.js | Python & Fastapi | Frontend and backend are created in a single languaje |
+
+### 7.2 Technology Choices
+
+| Decision | Alternatives | Justification |
+|-----|-----------|----------------------|
+| MCP Architecture | Monolith Architecture | Separation of flow control, state and persistence for more scalability |
+| Jwt Authentication | None | Technology that we know how to handle |
+
+### 7.3 Scalability and Maintenance Considerations
+
+- Interface - Angular: Their premise is to be scalable and maintainable
+- Backend - Node.js: Having all the codebase in JS - TS makes the code easier to work with, given that it's on a single language
+
+## Appendices
+
+### Glossary of Terms
+
+| Term | Definition |
+|---------|------------|
+| RAG | Technique that enables large language models to retrieve and incorporate new info |
+| MCP | (Master Control Program) architecture is a system design where a central program manages and controls all resources and processes in a computer |
+| show/ship/ask | Structured way to share work in GitHub |
+
+
+### References
+- [Node.js](https://nodejs.org/): Node.js® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts.
+- [Angular](https://angular.dev/): Angular is a development platform for building mobile and desktop web applications using TypeScript/JavaScript.
+- [MongoDB Atlas](https://www.mongodb.com/products/platform): MongoDB Atlas is a fully managed, multi-cloud database-as-a-service (DBaaS) built on MongoDB's flexible document model that simplifies the deployment, operation, and scaling of global applications.
+- [TypeScript](https://www.typescriptlang.org/): TypeScript is a strongly typed superset of JavaScript that adds optional static type checking to the language. It was developed to address the shortcomings of JavaScript, particularly in large-scale application development.
