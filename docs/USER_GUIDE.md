@@ -1,6 +1,6 @@
 # ELIO User Guide
 
-Welcome to ELIO! This guide helps you use the platform effectively.
+Welcome to ELIO! This guide explains how to use the platform as a healthcare professional.
 
 ## Accessing the Application
 
@@ -10,9 +10,9 @@ Welcome to ELIO! This guide helps you use the platform effectively.
 
 ## Main Features
 
-- Multi-step consultation intake
+- Multi-step consultation intake workflow
 - AI-generated clinical suggestions
-- Full consultation history
+- Consultation history
 - Secure account management
 
 ## Interface Overview
@@ -21,34 +21,35 @@ Welcome to ELIO! This guide helps you use the platform effectively.
 - **Main Content:** Dashboard, consultation forms, history
 - **Footer:** Legal, contact
 
-## How to Start a Consultation
+## Starting a Consultation
 
 1. On the dashboard, click "Start Consultation"
-2. Fill in the reason for consultation, age, and gender
-3. Proceed through steps (intake, history, allergies, etc.), selecting applicable options
-4. Confirm and review AI-generated draft
+2. Fill in the required fields (reason for consultation, age, gender)
+3. Proceed through each step (e.g., antecedents, allergies, drugs, etc.)
+4. Select applicable options at each step
+5. Confirm and review the AI-generated clinical summary
 
-## Multi-Step Flow
+## Multi-Step Workflow
 
-- Each step requests specific clinical details (e.g., antecedents, allergies, drugs)
-- Options are provided as checkboxes (see [Options Selector Guide](OPTIONS_SELECTOR_GUIDE.md))
-- You may add additional notes per step
-- Complete all steps for a full clinical summary
+- Each step requests specific clinical information
+- Options are displayed as checkboxes
+- Additional notes can be added per step
+- Complete all steps for a comprehensive summary
 
 ## Account and Security
 
-- Update your profile and password in the settings
-- Enable two-factor authentication (if available)
+- Update profile and password in settings
+- Enable two-factor authentication if available
 
 ## Best Practices
 
-- Be specific in consultation inputs
+- Provide specific information in consultation inputs
 - Review AI suggestions before confirming
 - Export history as needed
 
 ## Troubleshooting
 
-- Page issues: refresh, clear cache, try a different browser
+- Page issues: refresh, clear cache, or try a different browser
 - Login issues: check credentials, use "Forgot Password"
 - Consultation errors: retry or contact support
 
@@ -63,5 +64,3 @@ Welcome to ELIO! This guide helps you use the platform effectively.
 - Documentation: [docs/](../docs)
 
 ---
-
-Thank you for using ELIO!
