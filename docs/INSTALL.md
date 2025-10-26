@@ -1,20 +1,18 @@
 # ELIO Installation Guide
 
-This guide covers installation and environment setup for development and production.
+This guide explains how to set up ELIO for development and production environments.
 
-## System Requirements
+## Requirements
 
 - OS: Windows 10+, macOS 11+, or Linux (Ubuntu 20.04+)
-- Node.js: v18.0.0+
-- npm: v9.0.0+
-- RAM: 4GB minimum (8GB recommended)
-- Disk space: 2GB free
+- Node.js: v18.x or higher
+- npm: v9.x or higher
 
-## Clone the Repository
+## Cloning the Repository
 
 ```bash
-git clone https://github.com/your-repo/your-fold.git
-cd your-fold
+git clone https://github.com/your-name/ProyectoFinal_ELIO.git
+cd ProyectoFinal_ELIO
 ```
 
 ## Backend Setup
@@ -28,14 +26,16 @@ npm run test
 ## Frontend Setup
 
 ```bash
-cd ui
+cd client
 npm install
 npm run build
 ```
 
 ## Environment Configuration
 
-### Backend (.env in `server/`)
+### Backend
+
+Create a `.env` file in `server/`:
 
 ```env
 PORT=10000
@@ -46,9 +46,9 @@ SWAGGER_BASE_URL=/api/docs
 LOG_LEVEL=info
 ```
 
-### Frontend (Angular env files)
+### Frontend
 
-Edit `ui/src/environments/environment.ts` and `environment.prod.ts` as needed.
+Edit environment files in `client/src/environments/` as needed.
 
 ## Running the Application
 
@@ -60,18 +60,15 @@ Edit `ui/src/environments/environment.ts` and `environment.prod.ts` as needed.
 ### Production
 
 - Backend: `npm start`
-- Frontend: `npm run build && npm run serve:ssr:ui`
+- Frontend: `npm run build && npm run serve:ssr:client`
 
 ## Troubleshooting
 
-- Port conflicts: kill processes using the port
-- Module errors: reinstall dependencies
-- Compilation issues: run `npm run build`
+- Port conflicts: kill processes using the port.
+- Dependency errors: reinstall node_modules.
 
-## Getting Help
+## Need Help?
 
-- [API Reference](API_REFERENCE.md)
-- [Architecture Guide](ARCHITECTURE.md)
-- Open an issue for support
+See [docs/API.md](API.md), [docs/ARCHITECTURE.md](ARCHITECTURE.md), or open an issue.
 
 ---
