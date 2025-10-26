@@ -1,18 +1,11 @@
 # ELIO API Reference
 
-This document describes the main REST API endpoints available in ELIO's backend.
+This document describes the real REST API endpoints implemented in ELIO.
 
 ## Base URLs
 
 - Development: `http://localhost:10000`
-- Production: `<your-production-url>`
-
----
-
-## Authentication
-
-Currently, endpoints do not require authentication for demo purposes.  
-If enabled, authentication would use session or JWT tokens.
+- Production: Set in deployment environment
 
 ---
 
@@ -21,7 +14,7 @@ If enabled, authentication would use session or JWT tokens.
 ### Health Check
 
 - **GET /health**
-  - Check if API server is running.
+  - Checks API server status.
   - **Response:**
     ```json
     {
@@ -33,10 +26,14 @@ If enabled, authentication would use session or JWT tokens.
 
 ---
 
-### Start Consultation
+### Consultation Intake Steps
+
+All consultation steps are implemented as dedicated endpoints under `server/src/routes/`.
+
+#### Initial Consultation
 
 - **POST /start**
-  - Initiates a new consultation.
+  - Starts a new consultation.
   - **Request:**
     ```json
     {
@@ -48,8 +45,8 @@ If enabled, authentication would use session or JWT tokens.
   - **Response:**
     ```json
     {
-      "patientID": "uuid",
-      "pasoActual": "antecedentes",
+      "patientID": "<uuid>",
+      "pasoActual": "antecedents",
       "opciones": [
         { "label": "Diabetes", "checked": false },
         { "label": "Hypertension", "checked": false }
@@ -57,66 +54,54 @@ If enabled, authentication would use session or JWT tokens.
     }
     ```
 
----
+#### Step Endpoints
 
-### Step Endpoints (Antecedents, Allergies, Drugs, etc.)
+For each clinical intake step, there is a dedicated endpoint.  
+(Examples — see `server/src/routes/` for full list):
 
-For each intake step, there is a dedicated route in `server/src/routes/`.  
-See [Architecture Guide](ARCHITECTURE.md) for route folder list.
+- **POST /antecedents**
+- **POST /allergies**
+- **POST /drugs**
+- **POST /characteristics**
+- **POST /location**
+- **POST /red-flags**
+- ... (continue with other folders in `routes/`)
 
-- **POST /api/collect**
-  - Collects selected options for current step.
-  - **Request:**
-    ```json
-    {
-      "patientID": "uuid",
-      "opciones": ["Diabetes", "Hypertension"],
-      "additional": "Any notes"
-    }
-    ```
-  - **Response:**
-    ```json
-    {
-      "status": "ok",
-      "nextStep": "alergias",
-      "opciones": [
-        { "label": "Penicillin allergy", "checked": false }
-      ]
-    }
-    ```
+Each request typically expects:
 
----
-
-### Other Step Endpoints
-
-- **POST /api/antecedents**
-- **POST /api/allergies**
-- **POST /api/drugs**
-- ... (see `server/src/routes/` for full list)
-
-Each expects:
 ```json
 {
-  "patientID": "uuid",
-  "opciones": ["option1", "option2"],
-  "additional": "notes"
+  "patientID": "<uuid>",
+  "opciones": ["Diabetes", "Hypertension"],
+  "additional": "Any notes"
 }
 ```
 
-Each responds with next step name and options.
+Each response typically includes:
+
+```json
+{
+  "status": "ok",
+  "nextStep": "allergies",
+  "opciones": [
+    { "label": "Penicillin allergy", "checked": false }
+  ]
+}
+```
 
 ---
 
-### API Documentation (Swagger)
+### API Documentation
 
-Interactive docs at:  
-`http://localhost:10000/api/docs` (when backend running)
+Swagger is enabled at:  
+`http://localhost:10000/api/docs` (when backend is running)
 
 ---
 
 ## Error Handling
 
 All errors return:
+
 ```json
 {
   "error": {
@@ -133,12 +118,14 @@ Common codes: `VALIDATION_ERROR`, `NOT_FOUND`, `INTERNAL_ERROR`
 
 ## Rate Limiting
 
-Default: 100 requests per minute per IP.
+Configurable in backend environment.
 
 ---
 
 ## CORS
 
-Origins allowed by `CORS_ORIGIN` in backend `.env`.
+Configurable via `CORS_ORIGIN` in backend `.env`.
+
+---
 
 ---
